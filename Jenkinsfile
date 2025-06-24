@@ -39,3 +39,14 @@ pipeline {
         script {
           sh '''
             ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST "cd $REMOTE_PATH && docker compose down && docker compose up -d --build"
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ Despliegue completado con éxito.'
+    }
+
