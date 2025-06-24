@@ -28,7 +28,7 @@ pipeline {
         script {
           sh '''
             ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST "mkdir -p $REMOTE_PATH"
-            scp -i $SSH_KEY -o StrictHostKeyChecking=no docker-compose.yml $REMOTE_HOST:$REMOTE_PATH
+            scp -i $SSH_KEY -o StrictHostKeyChecking=no -r . $REMOTE_HOST:$REMOTE_PATH
           '''
         }
       }
@@ -39,18 +39,3 @@ pipeline {
         script {
           sh '''
             ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST "cd $REMOTE_PATH && docker compose down && docker compose up -d --build"
-          '''
-        }
-      }
-    }
-  } // ← ESTA llave estaba faltando
-
-  post {
-    success {
-      echo '✅ Despliegue completado con éxito.'
-    }
-    failure {
-      echo '❌ Algo falló en el pipeline.'
-    }
-  }
-}
