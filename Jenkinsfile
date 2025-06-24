@@ -38,14 +38,12 @@ pipeline {
       steps {
         script {
           sh '''
-            ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST '
-              cd $REMOTE_PATH && docker-compose down && docker-compose up -d --build
-            '
+            ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST "cd $REMOTE_PATH && docker compose down && docker compose up -d --build"
           '''
         }
       }
     }
-  }
+  } // ← ESTA llave estaba faltando
 
   post {
     success {
