@@ -3,8 +3,8 @@ pipeline {
 
   environment {
     IMAGE_NAME = 'miapp:latest'
-    REMOTE_HOST = 'usuario@IP_DE_TU_VM'
-    REMOTE_PATH = '/home/usuario/app'
+    REMOTE_HOST = 'juan@192.168.1.25'
+    REMOTE_PATH = '/home/juan/app'
     SSH_KEY = credentials('ssh-key-id') // Guardar en Jenkins la clave privada SSH con ese ID
   }
 
