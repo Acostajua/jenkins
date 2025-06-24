@@ -49,4 +49,8 @@ pipeline {
     success {
       echo '✅ Despliegue completado con éxito.'
     }
-
+    failure {
+      echo '❌ Algo falló en el pipeline.'
+    }
+  }
+}
