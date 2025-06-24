@@ -5,7 +5,7 @@ pipeline {
     IMAGE_NAME = 'miapp:latest'
     REMOTE_HOST = 'juan@192.168.1.25'
     REMOTE_PATH = '/home/juan/app'
-    SSH_KEY = credentials('ssh-key-id') // Guardar en Jenkins la clave privada SSH con ese ID
+    SSH_KEY = credentials('ssh-key-id') // Tu ID en Jenkins
   }
 
   stages {
@@ -26,11 +26,9 @@ pipeline {
     stage('Subir archivos por SSH') {
       steps {
         script {
-          // Copia los archivos docker-compose y app
           sh '''
-            ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST 'mkdir -p $REMOTE_PATH'
-            scp -i $SSH_KEY -o StrictHostKeyChecking=no docker-compose.yml $REMOTE_HOST:$REMOTE_PATH/
-            scp -i $SSH_KEY -o StrictHostKeyChecking=no -r . $REMOTE_HOST:$REMOTE_PATH/
+            ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST "mkdir -p $REMOTE_PATH"
+            scp -i $SSH_KEY -o StrictHostKeyChecking=no docker-compose.yml $REMOTE_HOST:$REMOTE_PATH
           '''
         }
       }
@@ -39,7 +37,11 @@ pipeline {
     stage('Desplegar en VM') {
       steps {
         script {
-          sh "ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST 'cd $REMOTE_PATH && docker-compose down && docker-compose up -d --build'"
+          sh '''
+            ssh -i $SSH_KEY -o StrictHostKeyChecking=no $REMOTE_HOST '
+              cd $REMOTE_PATH && docker-compose down && docker-compose up -d --build
+            '
+          '''
         }
       }
     }
@@ -47,10 +49,10 @@ pipeline {
 
   post {
     success {
-      echo 'Despliegue completado con éxito.'
+      echo '✅ Despliegue completado con éxito.'
     }
     failure {
-      echo 'Algo falló en el pipeline.'
+      echo '❌ Algo falló en el pipeline.'
     }
   }
 }
