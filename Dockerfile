@@ -1,20 +1,20 @@
-# Usa una imagen base oficial de Node.js
-FROM node:18
+# Usa una imagen base oficial de Node.js con soporte LTS
+FROM node:18-alpine
 
-# Establece el directorio de trabajo
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos de dependencias
+# Copia primero los archivos de dependencias para aprovechar la caché de Docker
 COPY package*.json ./
 
-# Instala las dependencias
-RUN npm install
+# Instala solo las dependencias de producción si estás en un entorno de despliegue
+RUN npm install --production
 
-# Copia el resto del código
+# Copia el resto del código fuente
 COPY . .
 
-# Expone el puerto en que corre la app
+# Expone el puerto en el que se ejecuta la aplicación
 EXPOSE 3000
 
-# Comando para iniciar la app
+# Comando por defecto para iniciar la aplicación
 CMD ["npm", "start"]
