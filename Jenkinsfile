@@ -22,7 +22,7 @@ pipeline {
 
     stage('Empaquetar archivos') {
       steps {
-        sh 'tar -czf deploy.tar.gz Dockerfile docker-compose.yml package*.json .env index.js'
+        sh 'tar -czf deploy.tar.gz Dockerfile docker-compose.yml package*.json index.js'
       }
     }
 
@@ -62,4 +62,3 @@ pipeline {
     }
   }
 }
-
