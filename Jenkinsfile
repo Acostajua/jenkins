@@ -6,7 +6,7 @@ pipeline {
     CONTAINER_NAME = 'miapp'
     REMOTE_HOST = 'azureuser@20.200.121.124'
     REMOTE_PATH = '/home/azureuser/app'
-    SSH_KEY_ID = 'llave-jenkins-vm'         // ID de la clave privada .pem agregada a Jenkins
+    SSH_KEY_ID = 'llave-jenkins-vm'         // ID de la clave privada .pem en Jenkins
     GIT_CREDENTIALS = 'github-token'        // ID del token de GitHub en Jenkins
   }
 
