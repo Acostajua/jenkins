@@ -1,14 +1,6 @@
 pipeline {
   agent any
 
-  environment {
-    IMAGE_NAME = 'node-app:latest'
-    REMOTE_USER = 'azureuser'
-    REMOTE_HOST = '20.63.90.185'
-    REMOTE_PATH = '/home/azureuser/app'
-    SSH_KEY = credentials('ssh-key-id') // Reemplaza con el ID real en Jenkins
-  }
-
   stages {
     stage('Inicio') {
       steps {
@@ -24,7 +16,7 @@ pipeline {
 
     stage('Construir imagen Docker') {
       steps {
-        sh 'docker build -t $IMAGE_NAME .'
+        sh 'docker build -t node-app:latest .'
       }
     }
 
@@ -36,23 +28,27 @@ pipeline {
 
     stage('Transferir a la VM') {
       steps {
-        sh '''
-          ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "mkdir -p $REMOTE_PATH"
-          scp -i "$SSH_KEY" -o StrictHostKeyChecking=no deploy.tar.gz $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH/
-        '''
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no azureuser@20.63.90.185 "mkdir -p /home/azureuser/app"
+            scp -i "$SSH_KEY" -o StrictHostKeyChecking=no deploy.tar.gz azureuser@20.63.90.185:/home/azureuser/app/
+          '''
+        }
       }
     }
 
     stage('Desplegar en VM Azure') {
       steps {
-        sh '''
-          ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-            cd $REMOTE_PATH &&
-            tar -xzf deploy.tar.gz &&
-            docker compose down || true &&
-            docker compose up -d --build
-          "
-        '''
+        withCredentials([sshUserPrivateKey(credentialsId: 'ssh-key-id', keyFileVariable: 'SSH_KEY')]) {
+          sh '''
+            ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no azureuser@20.63.90.185 "
+              cd /home/azureuser/app &&
+              tar -xzf deploy.tar.gz &&
+              docker compose down || true &&
+              docker compose up -d --build
+            "
+          '''
+        }
       }
     }
   }
@@ -66,3 +62,4 @@ pipeline {
     }
   }
 }
+
