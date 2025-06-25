@@ -6,13 +6,20 @@ pipeline {
     CONTAINER_NAME = 'miapp'
     REMOTE_HOST = 'azureuser@20.200.121.124'
     REMOTE_PATH = '/home/azureuser/app'
-    SSH_KEY_ID = 'llave-jenkins-vm' // ID de la clave privada en Jenkins
+    SSH_KEY_ID = 'llave-jenkins-vm'         // ID de la clave privada .pem agregada a Jenkins
+    GIT_CREDENTIALS = 'github-token'        // ID del token de GitHub en Jenkins
   }
 
   stages {
     stage('Clonar repo') {
       steps {
-        git 'https://github.com/tuusuario/turepo.git'
+        checkout([$class: 'GitSCM',
+          branches: [[name: '*/main']],
+          userRemoteConfigs: [[
+            url: 'https://github.com/Acostajua/jenkins.git',
+            credentialsId: env.GIT_CREDENTIALS
+          ]]
+        ])
       }
     }
 
